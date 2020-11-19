@@ -1,0 +1,167 @@
+---
+- hosts: localhost
+  gather_facts: no
+  force_handlers: yes
+
+  handlers:
+    - name: remove alertmanager config
+      file:
+        path: templates/kube-prometheus/alertmanager-config.yml
+        state: absent
+
+  tasks:
+    - name: create monitoring namespace
+      k8s:
+        wait: True
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: monitoring
+            labels:
+              name: monitoring
+              require-tls: spi
+      tags:
+        - monitoring
+        - metrics
+        - logging
+        - loki
+        - grafana
+        - prometheus
+
+    - name: add loki pvc
+      k8s:
+        apply: true
+        state: present
+        definition:
+          api_version: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: "loki-pvc"
+            namespace: monitoring
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            volumeMode: Filesystem
+            resources:
+              requests:
+                storage: 15Gi
+      tags:
+        - logging
+        - loki
+
+    - name: add loki monitoring
+      k8s:
+        namespace: monitoring
+        resource_definition: "{{ item }}"
+        apply: true
+        state: present
+        wait: yes
+      with_items: "{{ lookup('template', 'loki.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+      tags:
+        - logging
+        - loki
+
+    - name: template alertmanager config
+      template:
+        src: templates/kube-prometheus/alertmanager-config.yml.j2
+        dest: templates/kube-prometheus/alertmanager-config.yml
+      notify:
+        - remove alertmanager config
+      tags:
+        - monitoring
+        - prometheus
+        - buildjsonnet
+
+    - name: build prometheus manifests
+      command:
+        cmd: bash build.sh
+        chdir: templates/kube-prometheus
+      tags:
+        - monitoring
+        - prometheus
+        - buildjsonnet
+
+
+    - name: add prometheus CRDs
+      tags:
+        - monitoring
+        - prometheus
+      k8s:
+        namespace: monitoring
+        resource_definition: "{{ lookup('file', item) | from_yaml }}"
+        apply: true
+        state: present
+      with_fileglob:
+        - 'templates/kube-prometheus/manifests/setup/*.yaml'
+
+    - name: add prometheus
+      tags:
+        - monitoring
+        - prometheus
+      k8s:
+        namespace: monitoring
+        resource_definition: "{{ lookup('file', item) | from_yaml }}"
+        apply: true
+        state: present
+      with_fileglob:
+        - 'templates/kube-prometheus/manifests/*.yaml'
+
+    - name: add service monitors
+      tags:
+        - monitoring
+        - servicemonitors
+        - prometheus
+      k8s:
+        namespace: monitoring
+        resource_definition: "{{ item }}"
+        apply: true
+        state: present
+        wait: yes
+      with_items: "{{ lookup('template', 'servicemonitors.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+
+    - name: add grafana
+      k8s:
+        namespace: monitoring
+        resource_definition: "{{ item }}"
+        apply: true
+        state: present
+        wait: yes
+      with_items: "{{ lookup('template', 'grafana.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+      tags:
+        - logging
+        - monitoring
+        - grafana
+
+    - name: add grafana dashoards
+      k8s:
+        namespace: monitoring
+        apply: true
+        state: present
+        resource_definition: "{{ lookup('file', item) | from_yaml }}"
+      with_fileglob:
+        - "templates/dashboards/*"
+      tags:
+        - monitoring
+        - grafana
+        - dashboards
+
+    - name: add k8s dashboard
+      k8s:
+        apply: true
+        state: present
+        resource_definition: "{{ item }}"
+        wait: yes
+      with_items: "{{ lookup('template', 'k8s-dashboard.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+      tags:
+        - monitoring
+        - dashboard
