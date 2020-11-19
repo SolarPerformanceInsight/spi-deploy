@@ -1,0 +1,3 @@
+- include: network.yml
+- include: ci.yml
+- include: monitoring.yml
