@@ -1,0 +1,210 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    ingress_nginx_load_balancer_ip: 128.196.175.134
+    aws_account_id: "{{ lookup('aws_ssm', 'account_id') }}"
+    external_secrets:
+      iam_role: "k8s-secrets"
+
+  tasks:
+    - name: install cert-manager
+      tags:
+        - networking
+        - cert-manager
+      k8s:
+        namespace: cert-manager
+        resource_definition: "{{ item }}"
+        apply: true
+        state: present
+        wait: yes
+      with_items: "{{ lookup('template', 'cert-manager.yaml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+
+    - name: add self-signed cluster issuer
+      k8s:
+        state: present
+        apply: yes
+        definition:
+          apiVersion: cert-manager.io/v1alpha2
+          kind: ClusterIssuer
+          metadata:
+            name: selfsigned
+            namespace: cert-manager
+          spec:
+            selfSigned: {}
+      tags:
+        - networking
+        - cert-manager
+        - selfsigned
+
+    - name: add letsencrypt cluster issuer
+      k8s:
+        state: present
+        apply: yes
+        definition:
+          apiVersion: cert-manager.io/v1alpha2
+          kind: ClusterIssuer
+          metadata:
+            name: letsencrypt-prod
+            namespace: cert-manager
+          spec:
+            acme:
+              email: atlorenzo@email.arizona.edu
+              server: https://acme-v02.api.letsencrypt.org/directory
+              privateKeySecretRef:
+                name: letsencrypt-prod
+              solvers:
+                - selector:
+                    dnsZones:
+                      - "solarperformanceinsight.org"
+                      - "*.solarperformanceinsight.org"
+                  dns01:
+                    route53:
+                      region: us-west-2
+      tags:
+        - networking
+        - cert-manager
+        - letsencrypt
+
+    - name: add default cert
+      k8s:
+        state: present
+        apply: yes
+        definition:
+          apiVersion: cert-manager.io/v1alpha2
+          kind: Certificate
+          metadata:
+            name: spi-cert
+            namespace: default
+          spec:
+            secretName: spi-tls
+            issuerRef:
+              name: letsencrypt-prod
+              kind: ClusterIssuer
+            dnsNames:
+              - "solarperformanceinsight.org"
+              - "*.solarperformanceinsight.org"
+      tags:
+        - networking
+        - cert-manager
+
+
+    - name: add external-secrets namespace
+      k8s:
+        state: present
+        wait: true
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: external-secrets
+            labels:
+              name: external-secrets
+      tags:
+        - external-secrets
+        - networking
+
+    - name: install external-secrets
+      tags:
+        - external-secrets
+        - networking
+      k8s:
+        resource_definition: "{{ item }}"
+        namespace: external-secrets
+        state: present
+        apply: yes
+      with_items: "{{ lookup('template', 'external-secrets.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+
+
+    - name: add kubed for tls secret repl.
+      tags:
+        - networking
+        - sync-tls
+        - kubed
+      k8s:
+        resource_definition: "{{ item }}"
+        wait: true
+        apply: true
+        state: present
+      with_items: "{{ lookup('template', 'kubed.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+
+    - name: get spi-tls cert annotations
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: spi-tls
+        namespace: default
+      register: xtlsinfo
+      tags:
+        - networking
+        - sync-tls
+        - annotate
+
+    - name: annotate default crt to copy accross ns
+      command: kubectl annotate --overwrite -n default secret spi-tls kubed.appscode.com/sync="require-tls=spi"
+      when: |
+        xtlsinfo is defined and (
+          'kubed.appscode.com/sync' not in xtlsinfo['resources'][0]['metadata']['annotations']
+          or xtlsinfo['resources'][0]['metadata']['annotations']['kubed.appscode.com/sync']
+            != 'require-tls=spi')
+      tags:
+        - networking
+        - sync-tls
+        - annotate
+
+    - name: install nginx ingress
+      tags:
+        - networking
+        - nginx
+      k8s:
+        resource_definition: "{{ item }}"
+        apply: true
+        state: present
+        wait: yes
+      with_items: "{{ lookup('template', 'nginx.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+
+    - name: install nginx validating webhook
+      tags:
+        - networking
+        - nginx
+        - webhook
+      k8s:
+        resource_definition: "{{ lookup('template', 'nginx_webhook.yml') }}"
+        apply: true
+        state: present
+        wait: yes
+      register: nginxwebhook
+
+    - name: reapply jobs when webhook changed
+      tags:
+        - networking
+        - nginx
+        - webhook
+      when: |
+        nginxwebhook is defined and nginxwebhook.changed
+      block:
+        - name: remove jobs
+          k8s:
+            resource_definition: "{{ item }}"
+            state: absent
+            wait: yes
+          with_items: "{{ lookup('template', 'nginx_jobs.yml') | from_yaml_all | list }}"
+          loop_control:
+            label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+        - name: add jobs back
+          k8s:
+            resource_definition: "{{ item }}"
+            apply: true
+            state: present
+            wait: yes
+          with_items: "{{ lookup('template', 'nginx_jobs.yml') | from_yaml_all | list }}"
+          loop_control:
+            label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
