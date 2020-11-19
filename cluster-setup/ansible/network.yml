@@ -208,3 +208,24 @@
           with_items: "{{ lookup('template', 'nginx_jobs.yml') | from_yaml_all | list }}"
           loop_control:
             label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
+
+
+    - name: add default auth secret for nginx
+      k8s:
+        state: present
+        apply: yes
+        definition:
+          apiVersion: kubernetes-client.io/v1
+          kind: ExternalSecret
+          metadata:
+            name: default-auth
+            namespace: default
+          spec:
+            backendType: systemManager
+            data:
+              - key: /k8ssecrets/default-htpasswd
+                name: auth
+      tags:
+        - networking
+        - nginx
+        - nginx-auth
