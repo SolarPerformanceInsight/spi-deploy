@@ -1,0 +1,30 @@
+- hosts: localhost
+
+  tasks:
+    - name: add argocd namespace
+      k8s:
+        state: present
+        wait: true
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: argocd
+            labels:
+              name: argocd
+      tags:
+        - argocd
+        - ci
+
+    - name: install argocd
+      tags:
+        - argocd
+        - ci
+      k8s:
+        namespace: argocd
+        resource_definition: "{{ item }}"
+        apply: true
+        state: present
+      with_items: "{{ lookup('template', 'argocd.yml') | from_yaml_all | list }}"
+      loop_control:
+        label: "{{ item.kind }}-{{ item.metadata.name | default('noname') }}"
