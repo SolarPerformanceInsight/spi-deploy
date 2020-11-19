@@ -36,11 +36,9 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 data:
-  keep-alive: '10'
   hide-headers: "X-Powered-By,Server"
   ssl-protocols: "TLSv1.3"
   ssl-ciphers: "EECDH+AESGCM:EDH+AESGCM"
-  enable-ocsp: "true"
   hsts-preload: "true"
 ---
 # Source: ingress-nginx/templates/clusterrole.yaml
