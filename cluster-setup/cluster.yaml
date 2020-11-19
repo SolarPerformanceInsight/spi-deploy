@@ -1,0 +1,28 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: default-cluster
+  region: us-west-2
+  version: "1.18"
+
+vpc:
+  clusterEndpoints:
+    privateAccess: true
+    publicAccess: true
+  nat:
+    gateway: "Disable"
+
+managedNodeGroups:
+  - name: ng-0
+    instanceType: m5a.large
+    desiredCapacity: 2
+    ssh:
+      allow: true
+      publicKeyPath: ~/.ssh/spi-node.pub
+    privateNetworking: false
+    iam:
+      withAddonPolicies:
+        ebs: true
+        autoScaler: true
+        certManager: true
