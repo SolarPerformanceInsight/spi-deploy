@@ -5,4 +5,5 @@ commonLabels:
 
 resources:
   - service.yaml
+  - nginx-config.yaml
   - deployment.yaml
