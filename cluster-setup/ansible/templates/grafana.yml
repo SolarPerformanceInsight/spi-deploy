@@ -421,6 +421,7 @@ spec:
   tls:
     - hosts:
       - grafana.solarperformanceinsight.org
+      secretName: spi-tls
   rules:
     - host: grafana.solarperformanceinsight.org
       http:
