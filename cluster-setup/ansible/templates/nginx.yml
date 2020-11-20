@@ -279,7 +279,7 @@ metadata:
   labels:
     helm.sh/chart: ingress-nginx-3.10.1
     app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress
+    app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/version: 0.41.2
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
@@ -293,7 +293,7 @@ spec:
       targetPort: metrics
   selector:
     app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress
+    app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/component: controller
 ---
 # Source: ingress-nginx/templates/controller-service.yaml

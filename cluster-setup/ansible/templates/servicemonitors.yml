@@ -4,7 +4,6 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: external-secrets-kubernetes-external-secrets
-  namespace: monitoring
   labels:
     app.kubernetes.io/name: kubernetes-external-secrets
     helm.sh/chart: kubernetes-external-secrets-6.0.0
@@ -30,7 +29,7 @@ metadata:
   labels:
     helm.sh/chart: ingress-nginx-3.10.1
     app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress
+    app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/version: "0.41.2"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
