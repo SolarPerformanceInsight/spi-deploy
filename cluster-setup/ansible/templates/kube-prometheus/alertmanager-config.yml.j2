@@ -1,0 +1,37 @@
+global:
+  resolve_timeout: 5m
+  http_config: {}
+route:
+  receiver: default
+  routes:
+  - receiver: deadmansswitch
+    match:
+      alertname: Watchdog
+    repeat_interval: 5m
+  - receiver: slack_critical
+    match:
+      severity: critical
+  - receiver: slack_warning
+    match:
+      severity: warning
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+receivers:
+- name: default
+- name: slack_critical
+  slack_configs:
+  - api_url: {{ lookup('aws_ssm', '/monitoring/slack_critical_webhook') }}
+    channel: spi-critical
+    send_resolved: true
+- name: slack_warning
+  slack_configs:
+  - api_url: {{ lookup('aws_ssm', '/monitoring/slack_warning_webhook') }}
+    channel: spi-warning
+    send_resolved: true
+- name: deadmansswitch
+  webhook_configs:
+  - send_resolved: false
+    http_config: {}
+    url: {{ lookup('aws_ssm', '/monitoring/deadmanswitch_endpoint') }}
+templates: []
