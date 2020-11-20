@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadatda:
+  name: development
+  labels:
+    name: development
+    require-tls: 'spi'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: development
+  namespace: argocd
+spec:
+  destination:
+    namespace: development
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: overlays/development
+    repoURL: git@github.com:solarperformanceinsight/spi-deploy.git
+    targetRevision: HEAD
+    kustomize:
+      version: v3.8.7
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
