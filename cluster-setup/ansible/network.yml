@@ -2,7 +2,6 @@
 - hosts: localhost
   gather_facts: no
   vars:
-    ingress_nginx_load_balancer_ip: 128.196.175.134
     aws_account_id: "{{ lookup('aws_ssm', 'account_id') }}"
     external_secrets:
       iam_role: "k8s-secrets"
