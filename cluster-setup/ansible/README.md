@@ -1,5 +1,4 @@
-SolarPerformanceInsight EKS Infrastructure
-------------------------------------------
+# SolarPerformanceInsight EKS Infrastructure
 
 This folder contains Ansible playbooks to setup essential services
 once an EKS cluster has been established including:
