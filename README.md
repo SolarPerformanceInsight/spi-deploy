@@ -10,7 +10,7 @@ by logging in via GitHub.
 
 ## Cluster Setup
 
-In the `cluset-setup` folder, you'll find the `cluster.yaml` file that
+In the `cluster-setup/` folder, you'll find the `cluster.yaml` file that
 was used with ``eksctl create cluster -f cluster.yaml`` to create the
 initial AWS EKS cluster. One may need to use ``eksctl utils
 write-kubeconfig`` with appropriate options to make sure ``kubectl``
