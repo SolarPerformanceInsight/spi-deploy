@@ -1,20 +1,21 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: spi-app
+  name: solarperformanceinsight
   labels:
     app: solarperformanceinsight
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - host: dev.solarperformanceinsight.org
-      http:
-        - path: /
-          backend:
-            serviceName: spi-app
-            servicePort: http
+  - host: dev.solarperformanceinsight.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: solarperformanceinsight
+          servicePort: http
   tls:
-    - hosts:
-        - dev.solarperformanceinsight.org
-      secretName: spi-tls
+  - hosts:
+      - dev.solarperformanceinsight.org
+    secretName: spi-tls

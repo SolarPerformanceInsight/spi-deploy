@@ -9,9 +9,10 @@ spec:
     - name: http
       port: 8080
       protocol: TCP
+      targetPort: http
   selector:
     app: solarperformanceinsight
-  sesionAffinity: None
+  sessionAffinity: None
   type: ClusterIP
 status:
   loadBalancer: {}
