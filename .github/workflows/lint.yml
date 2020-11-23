@@ -1,0 +1,34 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup kustomize
+        uses: imranismail/setup-kustomize@v1
+        with:
+          kustomize-version: 3.8.7
+
+     - name: Setup kubeval
+       uses: lra/setup-kubeval@v1
+
+     - name: Check valid K8s manifests
+       run: |
+         shopt -s globstar
+         declare -i RESULT=0
+
+         for folder in overlays/*; do
+             echo 'Validating ' $folder
+             kustomize $folder | kubeval --ignore-missing-schemas -v 1.18
+             kres=$?
+             RESULT+=$kres
+         done
+         exit $RESULT
