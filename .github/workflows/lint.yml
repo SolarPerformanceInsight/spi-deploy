@@ -24,11 +24,25 @@ jobs:
         run: |
           shopt -s globstar
           declare -i RESULT=0
+          RED='\033[0;31m'
+          GREEN='\033[0;32m'
+          NC='\033[0m'
 
-          for folder in overlays/*; do
-              echo 'Validating ' $folder
-              kustomize $folder | kubeval --ignore-missing-schemas -v 1.18
-              kres=$?
-              RESULT+=$kres
+          for f in overlays/*; do
+              echo 'Building ' $f
+              tfile=$(mktemp)
+              kustomize build -o $tfile $f
+              tres=$?
+              RESULT+=$tres
+              echo -n 'Testing build of' $f'...'
+              if [ $tres != 0 ]; then
+                  echo -e " ${RED}FAILED${NC}"
+              else
+                  echo -e " ${GREEN}PASSED${NC}"
+                  echo 'Running kubeval on' $f
+                  kubeval --ignore-missing-schemas --force-color -f $f $tfile
+                  kres=$?
+                  RESULT+=$kres
+              fi
           done
           exit $RESULT
