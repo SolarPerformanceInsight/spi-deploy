@@ -1,0 +1,49 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup kustomize
+        uses: imranismail/setup-kustomize@v1
+        with:
+          kustomize-version: 3.8.7
+
+      - name: Setup kubeval
+        uses: lra/setup-kubeval@v1
+
+      - name: Check valid K8s manifests
+        run: |
+          shopt -s globstar
+          declare -i RESULT=0
+          RED='\033[0;31m'
+          GREEN='\033[0;32m'
+          NC='\033[0m'
+
+          for f in overlays/*; do
+              echo 'Building ' $f
+              tfile=$(mktemp)
+              kustomize build -o $tfile $f
+              tres=$?
+              RESULT+=$tres
+              echo -n 'Testing build of' $f'...'
+              if [ $tres != 0 ]; then
+                  echo -e " ${RED}FAILED${NC}"
+              else
+                  echo -e " ${GREEN}PASSED${NC}"
+                  echo 'Running kubeval on' $f
+                  kubeval --ignore-missing-schemas --force-color -f $f $tfile
+                  kres=$?
+                  RESULT+=$kres
+              fi
+          done
+          exit $RESULT
