@@ -28,14 +28,50 @@ spec:
           - mountPath: /static
             name: static-files
       containers:
-      - name: staticfiles
+      - name: api
+        image: quay.io/solarperformanceinsight/solarperformanceinsight
+        command:
+          - sh
+          - -c
+          - |
+            uvicorn solarperformanceinsight_api.main:app \
+              --host 0.0.0.0 \
+              --port 8079 \
+              --proxy-headers \
+              --forwarded-allow-ips '*' \
+              --root-path /api \
+              --workers 4 \
+              --log-config /conf/logging.json
+        ports:
+          - containerPort: 8079
+            protocol: TCP
+            name: apihttp
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: apihttp
+          initialDelaySeconds:
+          timeoutSeconds: 5
+          periodSeconds: 15
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            memory: 1024Mi
+        volumeMounts:
+          - mountPath: /conf/logging.json
+            name: uvicorn-log-config
+            subPath: logging.json
+      - name: nginx
         image: nginx:1.19
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
           protocol: TCP
           name: http
-        resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         readinessProbe:
@@ -54,7 +90,7 @@ spec:
         volumeMounts:
           - mountPath: /static
             name: static-files
-          - mountPath: /etc/nginx/conf.d/default.conf
+          - mountPath: /etc/nginx/conf.d/spi.conf
             name: nginx-conf
             subPath: nginx.conf
       dnsPolicy: ClusterFirst
@@ -68,3 +104,6 @@ spec:
         - name: nginx-conf
           configMap:
             name: nginx-config
+        - name: uvicorn-log-config
+          configMap:
+            name: uvicorn-log-config

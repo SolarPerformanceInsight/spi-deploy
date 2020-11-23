@@ -6,4 +6,5 @@ commonLabels:
 resources:
   - service.yaml
   - nginx-config.yaml
+  - uvicorn-log-config.yaml
   - deployment.yaml
