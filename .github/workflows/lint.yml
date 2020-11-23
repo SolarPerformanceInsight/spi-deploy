@@ -17,18 +17,18 @@ jobs:
         with:
           kustomize-version: 3.8.7
 
-     - name: Setup kubeval
-       uses: lra/setup-kubeval@v1
+      - name: Setup kubeval
+        uses: lra/setup-kubeval@v1
 
-     - name: Check valid K8s manifests
-       run: |
-         shopt -s globstar
-         declare -i RESULT=0
+      - name: Check valid K8s manifests
+        run: |
+          shopt -s globstar
+          declare -i RESULT=0
 
-         for folder in overlays/*; do
-             echo 'Validating ' $folder
-             kustomize $folder | kubeval --ignore-missing-schemas -v 1.18
-             kres=$?
-             RESULT+=$kres
-         done
-         exit $RESULT
+          for folder in overlays/*; do
+              echo 'Validating ' $folder
+              kustomize $folder | kubeval --ignore-missing-schemas -v 1.18
+              kres=$?
+              RESULT+=$kres
+          done
+          exit $RESULT
