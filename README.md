@@ -33,3 +33,21 @@ Manager Parameter Store.
 The actual SolarPerformanceInsight app is deployed via [Argo
 CD](https://argocd.solarperformanceinsight.org) from the applications
 defined in the ``applications`` folder.
+
+
+Each application should reference a folder containing a kustomization overlay
+on top of resources found in ``base``. For example, the development application
+builds the Kubernetes manifests from the `overlays/development` folder. Any
+changes to the application should be done through these manifests to let Argo CD
+automatically update the resources once the change is merged. Otherwise,
+Argo will likely revert any changes made to the resources to the state describe
+in the latest commit.
+
+
+Application errors are monitored with [Sentry](https://sentry.io/organizations/solar-performance-insight/issues/).
+Other application statistics can be found on the appropriate dashboard of the
+[Grafana](https://grafana.solarperformanceinsight.org) deployment that monitors
+Prometheus metrics for the cluster. Alerts can be configured either directly
+in Grafana or through [Alertmanager](https://alertmanager.solarperformanceinsight.org).
+Application logs are aggregated via [Loki](https://grafana.solarperformanceinsight.org/explore)
+and accessible from the Explore link in Grafana.
