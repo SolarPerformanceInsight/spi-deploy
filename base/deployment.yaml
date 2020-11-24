@@ -41,6 +41,9 @@ spec:
               --forwarded-allow-ips '*' \
               --root-path /api \
               --log-config /conf/logging.json
+        env:
+          - name: SENTRY_DSN
+            value: "https://d5320f50e1d745c58c7db3c9162e4048@o481024.ingest.sentry.io/5529532"
         ports:
           - containerPort: 8079
             protocol: TCP
