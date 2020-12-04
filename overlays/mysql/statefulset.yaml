@@ -40,8 +40,6 @@ spec:
               secretKeyRef:
                 key: database-root-password
                 name: spi-mysql
-          - name: MYSQL_DATABASE
-            value: spi_data
           - name: ALTER_USER_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -61,7 +59,7 @@ spec:
               - /bin/sh
               - -i
               - -c
-              - MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -u root -D $MYSQL_DATABASE
+              - MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -u root
                 -e 'SELECT 1' --default-auth=caching_sha2_password
             failureThreshold: 3
             initialDelaySeconds: 5
