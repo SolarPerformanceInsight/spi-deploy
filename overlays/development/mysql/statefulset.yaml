@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: spi-mysql
+spec:
+  selector:
+    matchLabels:
+      app: solarperformanceinsight
+      component: db
+  serviceName: spi-mysql
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: spi-mysql
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 5Gi
+  template:
+    metadata:
+      labels:
+        app: solarperformanceinsight
+        component: db
+    spec:
+      volumes:
+        - name: mysql-cnf
+          configMap:
+            name: spi-mysql
+            items:
+              - key: my-cnf
+                path: my.cnf
+      containers:
+        - name: mysql
+          image: mysql:8.0.21
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-root-password
+                name: spi-mysql
+          - name: MYSQL_DATABASE
+            value: spi_data
+          - name: ALTER_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: alter-user-password
+                name: spi-mysql
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: spi-mysql
+              mountPath: /var/lib/mysql
+            - name: mysql-cnf
+              mountPath: /etc/my.cnf.d/
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -u root -D $MYSQL_DATABASE
+                -e 'SELECT 1' --default-auth=caching_sha2_password
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 768Mi

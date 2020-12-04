@@ -6,6 +6,7 @@ namespace: development
 resources:
 - ../../base
 - ingress.yaml
+- migration-job.yaml
 images:
 - digest: sha256:944ce33a60d07e01e58bd7b8bb73f3d5cb1eafb75560287932a7285cbed28a53
   name: quay.io/solarperformanceinsight/solarperformanceinsight
