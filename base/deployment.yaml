@@ -41,10 +41,10 @@ spec:
               --root-path /api \
               --log-config /conf/logging.json
         env:
+          - name: SPI_MYSQL_HOST
+            value:
           - name: SENTRY_DSN
             value: "https://d5320f50e1d745c58c7db3c9162e4048@o481024.ingest.sentry.io/5529532"
-          - name: SPI_MYSQL_HOST
-            value: $(MYSQL_HOST)
           - name: SPI_MYSQL_PASSWORD
             valueFrom:
               secretKeyRef:

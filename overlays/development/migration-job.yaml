@@ -16,7 +16,7 @@ spec:
             - /opt/app-root/bin/migrate
           env:
           - name: MYSQL_HOST
-            value: $(MYSQL_HOST)
+            value: null
           - name: MYSQL_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -28,4 +28,4 @@ spec:
                 key: apiuser-password
                 name: spi-mysql
   backoffLimit: 3
-  ttlSecondsAfterFinished: 60
+
