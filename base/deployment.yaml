@@ -5,7 +5,6 @@ metadata:
     app: solarperformanceinsight
   name: solarperformanceinsight
 spec:
-  replicas: 2
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -44,6 +43,13 @@ spec:
         env:
           - name: SENTRY_DSN
             value: "https://d5320f50e1d745c58c7db3c9162e4048@o481024.ingest.sentry.io/5529532"
+          - name: SPI_MYSQL_HOST
+            value: $(MYSQL_HOST)
+          - name: SPI_MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: apiuser-password
+                name: spi-mysql
         ports:
           - containerPort: 8079
             protocol: TCP
