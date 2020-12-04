@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spi-mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
+    targetPort: mysql
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

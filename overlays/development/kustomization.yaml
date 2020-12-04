@@ -4,8 +4,18 @@ commonLabels:
   state: dev
 namespace: development
 resources:
+- ./mysql
 - ../../base
 - ingress.yaml
+- migration-job.yaml
 images:
 - digest: sha256:944ce33a60d07e01e58bd7b8bb73f3d5cb1eafb75560287932a7285cbed28a53
   name: quay.io/solarperformanceinsight/solarperformanceinsight
+
+
+vars:
+  - name: MYSQL_HOST
+    objref:
+      kind: Service
+      name: spi-mysql
+      apiVersion: v1
