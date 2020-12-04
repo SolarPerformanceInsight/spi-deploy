@@ -43,6 +43,8 @@ spec:
         env:
           - name: SPI_MYSQL_HOST
             value:
+          - name: SPI_MYSQL_PORT
+            value: '3306'
           - name: SENTRY_DSN
             value: "https://d5320f50e1d745c58c7db3c9162e4048@o481024.ingest.sentry.io/5529532"
           - name: SPI_MYSQL_PASSWORD
