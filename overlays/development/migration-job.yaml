@@ -16,7 +16,7 @@ spec:
             - /opt/app-root/bin/migrate
           env:
           - name: MYSQL_HOST
-            value: 'spi-mysql'
+            value: $(MYSQL_HOST)
           - name: MYSQL_PASSWORD
             valueFrom:
               secretKeyRef:
