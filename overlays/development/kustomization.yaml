@@ -7,5 +7,5 @@ resources:
 - ../../base
 - ingress.yaml
 images:
-- digest: sha256:74d2122bb540db31cf1903d656c76a4666b2dd2f40127e62b8a2c2ecabac32a6
+- digest: sha256:8853219feae292a8dd777221d8151443f7192e106fbe874e94ce0c26d3619773
   name: quay.io/solarperformanceinsight/solarperformanceinsight
