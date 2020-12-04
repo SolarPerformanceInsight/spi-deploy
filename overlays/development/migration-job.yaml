@@ -25,7 +25,7 @@ spec:
           - name: ALTER_USER_PASSWORD
             valueFrom:
               secretKeyRef:
-                key: alter-user-password
+                key: apiuser-password
                 name: spi-mysql
   backoffLimit: 3
   ttlSecondsAfterFinished: 60
