@@ -40,6 +40,7 @@ data:
   ssl-protocols: "TLSv1.3"
   ssl-ciphers: "EECDH+AESGCM:EDH+AESGCM"
   hsts-preload: "true"
+  use-proxy-protocol: "true"
 ---
 # Source: ingress-nginx/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
