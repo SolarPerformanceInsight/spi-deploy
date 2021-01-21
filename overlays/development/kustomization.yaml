@@ -8,7 +8,7 @@ resources:
 - ingress.yaml
 - migration-job.yaml
 images:
-- digest: sha256:c0742f736b6cbbe81329be1d8c56d29c089fe22035e3b124e01b1709548bd14e
+- digest: sha256:db65c3d8b0b63475c01315b66a29b9942769ca5cb1ed5e57b032c0a2b7b62459
   name: quay.io/solarperformanceinsight/solarperformanceinsight
 
 patchesJson6902:
@@ -25,6 +25,15 @@ patchesJson6902:
     - op: replace
       path: /spec/template/spec/containers/0/env/0/value
       value: "spi-mysql.development.svc"
+  target:
+    group: apps
+    kind: Deployment
+    name: solarperformanceinsight
+    version: v1
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/1/value
+      value: "spi-redis.development.svc"
   target:
     group: apps
     kind: Deployment

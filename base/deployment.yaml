@@ -43,6 +43,8 @@ spec:
         env:
           - name: SPI_MYSQL_HOST
             value:
+          - name: SPI_REDIS_HOST
+            value:
           - name: SPI_MYSQL_PORT
             value: '3306'
           - name: SENTRY_DSN
@@ -52,6 +54,16 @@ spec:
               secretKeyRef:
                 key: apiuser-password
                 name: spi-mysql
+          - name: SPI_REDIS_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: user
+                name: spi-redis
+          - name: SPI_REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: spi-redis
         ports:
           - containerPort: 8079
             protocol: TCP

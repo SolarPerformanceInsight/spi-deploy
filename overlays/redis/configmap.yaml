@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spi-redis
+data:
+  redis-cnf: |
+    port 6379
+    bind 0.0.0.0
+    protected-mode yes
+    timeout 0
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+
+    # turn off any snapshotting
+    # assume we can repopulate any queues from the db
+    appendonly no
+    save ""
+
+    maxmemory 384mb
+    maxmemory-policy noeviction
+
+    aclfile /redis/users.acl
