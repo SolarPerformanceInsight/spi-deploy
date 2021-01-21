@@ -31,12 +31,21 @@ spec:
               --sentry-dsn "$SENTRY_DSN"
         # might need --worker-ttl or --job-monitoring-interval
         env:
+          - name: SPI_MYSQL_HOST
+            value:
           - name: SPI_REDIS_HOST
             value:
+          - name: SPI_MYSQL_PORT
+            value: '3306'
           - name: SPI_REDIS_PORT
             value: '6379'
           - name: SENTRY_DSN
             value: "https://a1ef1278584945faaa3d4529e78bbc66@o481024.ingest.sentry.io/5602349"
+          - name: SPI_MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: apiuser-password
+                name: spi-mysql
           - name: SPI_REDIS_USERNAME
             valueFrom:
               secretKeyRef:
