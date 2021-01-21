@@ -27,5 +27,10 @@ spec:
               secretKeyRef:
                 key: apiuser-password
                 name: spi-mysql
+          - name: ALTER_Q_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: qmanager-password
+                name: spi-mysql
   backoffLimit: 3
 
