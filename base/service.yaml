@@ -12,6 +12,7 @@ spec:
       targetPort: http
   selector:
     app: solarperformanceinsight
+    component: api
   sessionAffinity: None
   type: ClusterIP
 status:

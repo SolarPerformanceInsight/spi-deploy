@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: solarperformanceinsight
+    component: worker
+  name: spi-rq-worker
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: solarperformanceinsight
+      component: worker
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: solarperformanceinsight
+        component: worker
+    spec:
+      containers:
+      - name: rq-worker
+        image: quay.io/solarperformanceinsight/solarperformanceinsight
+        command:
+          - sh
+          - -c
+          - |
+            rq worker jobs \
+              --url "redis://$SPI_REDIS_USERNAME:$SPI_REDIS_PASSWORD@$SPI_REDIS_HOST:$SPI_REDIS_PORT/0" \
+              --sentry-dsn "$SENTRY_DSN"
+        # might need --worker-ttl or --job-monitoring-interval
+        env:
+          - name: SPI_REDIS_HOST
+            value:
+          - name: SPI_REDIS_PORT
+            value: '6379'
+          - name: SENTRY_DSN
+            value: "https://a1ef1278584945faaa3d4529e78bbc66@o481024.ingest.sentry.io/5602349"
+          - name: SPI_REDIS_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: user
+                name: spi-redis
+          - name: SPI_REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: spi-redis
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        resources:
+          requests:
+            cpu: 200m
+            memory: 128Mi
+          limits:
+            memory: 384Mi
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

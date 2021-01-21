@@ -3,18 +3,21 @@ kind: Deployment
 metadata:
   labels:
     app: solarperformanceinsight
+    component: api
   name: solarperformanceinsight
 spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: solarperformanceinsight
+      component: api
   strategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
         app: solarperformanceinsight
+        component: api
     spec:
       initContainers:
       - name: copystatic
@@ -47,6 +50,8 @@ spec:
             value:
           - name: SPI_MYSQL_PORT
             value: '3306'
+          - name: SPI_REDIS_PORT
+            value: '6379'
           - name: SENTRY_DSN
             value: "https://d5320f50e1d745c58c7db3c9162e4048@o481024.ingest.sentry.io/5529532"
           - name: SPI_MYSQL_PASSWORD

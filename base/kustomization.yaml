@@ -8,3 +8,4 @@ resources:
   - nginx-config.yaml
   - uvicorn-log-config.yaml
   - deployment.yaml
+  - rq-worker-deployment.yaml
