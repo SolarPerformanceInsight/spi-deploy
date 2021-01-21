@@ -39,3 +39,12 @@ patchesJson6902:
     kind: Deployment
     name: solarperformanceinsight
     version: v1
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/0/value
+      value: "spi-redis.development.svc"
+  target:
+    group: apps
+    kind: Deployment
+    name: spi-rq-worker
+    version: v1
