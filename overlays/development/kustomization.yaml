@@ -8,7 +8,7 @@ resources:
 - ingress.yaml
 - migration-job.yaml
 images:
-- digest: sha256:7757cd69542ff610993b1934fccd6c60d94dbe561a5a2442389b29e9691db7e7
+- digest: sha256:1de36b3342eaad5a150b34e383c2f0bb8cc5b58643f9ae1579f81cee595feec3
   name: quay.io/solarperformanceinsight/solarperformanceinsight
 
 patchesJson6902:
