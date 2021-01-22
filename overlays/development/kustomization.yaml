@@ -57,3 +57,21 @@ patchesJson6902:
     kind: Deployment
     name: spi-rq-worker
     version: v1
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/0/value
+      value: "spi-mysql.development.svc"
+  target:
+    group: apps
+    kind: Deployment
+    name: spi-queue-sync
+    version: v1
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/1/value
+      value: "spi-redis.development.svc"
+  target:
+    group: apps
+    kind: Deployment
+    name: spi-queue-sync
+    version: v1

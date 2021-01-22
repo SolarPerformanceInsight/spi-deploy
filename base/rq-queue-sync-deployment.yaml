@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: solarperformanceinsight
+    component: queue-sync
+  name: spi-queue-sync
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: solarperformanceinsight
+      component: queue-sync
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: solarperformanceinsight
+        component: queue-sync
+    spec:
+      containers:
+      - name: rq-worker
+        image: quay.io/solarperformanceinsight/solarperformanceinsight
+        command:
+          - /opt/app-root/bin/spi-sync-jobs
+        env:
+          - name: SPI_MYSQL_HOST
+            value:
+          - name: SPI_REDIS_HOST
+            value:
+          - name: SPI_MYSQL_PORT
+            value: '3306'
+          - name: SPI_REDIS_PORT
+            value: '6379'
+          - name: SENTRY_DSN
+            value: "https://a1ef1278584945faaa3d4529e78bbc66@o481024.ingest.sentry.io/5602349"
+          - name: SPI_MYSQL_USER
+            value: qmanager
+          - name: SPI_MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: qmanager-password
+                name: spi-mysql
+          - name: SPI_REDIS_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: user
+                name: spi-redis
+          - name: SPI_REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: spi-redis
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
