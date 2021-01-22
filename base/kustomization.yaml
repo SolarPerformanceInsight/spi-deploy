@@ -9,3 +9,4 @@ resources:
   - uvicorn-log-config.yaml
   - deployment.yaml
   - rq-worker-deployment.yaml
+  - rq-queue-sync-deployment.yaml
