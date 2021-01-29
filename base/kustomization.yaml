@@ -2,11 +2,15 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 commonLabels:
   app: solarperformanceinsight
-
+configMapGenerator:
+  - name: nginx-config
+    files:
+      - nginx.conf
+  - name: uvicorn-log-config
+    files:
+      - logging.json
 resources:
   - service.yaml
-  - nginx-config.yaml
-  - uvicorn-log-config.yaml
   - deployment.yaml
   - rq-worker-deployment.yaml
   - rq-queue-sync-deployment.yaml
