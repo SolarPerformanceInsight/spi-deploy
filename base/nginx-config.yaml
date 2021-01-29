@@ -17,7 +17,7 @@ data:
     gzip  on;
     gzip_comp_level 6;
     gzip_proxied no-cache no-store private expired auth;
-    gzip_types text/plain application/json text/css application/javascript;
+    gzip_types text/plain application/json text/css application/javascript text/csv application/vnd.apache.arrow.file;
     gzip_min_length 1000;
     gunzip on;
 
