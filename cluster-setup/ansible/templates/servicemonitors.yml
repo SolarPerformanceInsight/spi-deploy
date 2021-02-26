@@ -27,10 +27,10 @@ kind: ServiceMonitor
 metadata:
   name: ingress-nginx-controller
   labels:
-    helm.sh/chart: ingress-nginx-3.10.1
+    helm.sh/chart: ingress-nginx-3.23.0
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: "0.41.2"
+    app.kubernetes.io/version: "0.44.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
