@@ -4,7 +4,7 @@ commonLabels:
   state: dev
 namespace: development
 resources:
-- ../../base
+- ../../../base/spi
 - ingress.yaml
 - migration-job.yaml
 images:
