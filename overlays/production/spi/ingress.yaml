@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: solarperformanceinsight
+  labels:
+    app: solarperformanceinsight
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+spec:
+  rules:
+  - host: app.solarperformanceinsight.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: solarperformanceinsight
+          servicePort: http
+  tls:
+  - hosts:
+      - app.solarperformanceinsight.org
+    secretName: spi-tls

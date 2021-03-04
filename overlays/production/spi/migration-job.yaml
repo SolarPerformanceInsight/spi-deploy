@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: schema-migration
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: quay.io/solarperformanceinsight/solarperformanceinsight
+          command:
+            - /opt/app-root/bin/migrate
+          env:
+          - name: MYSQL_HOST
+            value: null
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-root-password
+                name: spi-mysql
+          - name: ALTER_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: apiuser-password
+                name: spi-mysql
+          - name: ALTER_Q_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: qmanager-password
+                name: spi-mysql
+  backoffLimit: 3
+

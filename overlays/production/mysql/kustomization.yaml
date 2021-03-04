@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  state: prod
+namespace: production
+resources:
+- ../../../base/mysql
+
+images:
+- name: mysql
+  digest: sha256:03306a1f248727ec979f61424c5fb5150e2c5fd2436f2561c5259b1258d6063c
+patchesJson6902:
+- patch: |-
+    - op: replace
+      path: /spec/data/0/key
+      value: /k8ssecrets/production/mysql/apiuser-password
+    - op: replace
+      path: /spec/data/1/key
+      value: /k8ssecrets/production/mysql/qmanager-password
+    - op: replace
+      path: /spec/data/2/key
+      value: /k8ssecrets/production/mysql/root-password
+  target:
+    group: kubernetes-client.io
+    kind: ExternalSecret
+    name: spi-mysql
+    version: v1

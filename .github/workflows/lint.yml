@@ -29,7 +29,7 @@ jobs:
           GREEN='\033[0;32m'
           NC='\033[0m'
 
-          for f in overlays/*; do
+          for f in overlays/*/*; do
               echo 'Building ' $f
               tfile=$(mktemp)
               kustomize build -o $tfile $f
