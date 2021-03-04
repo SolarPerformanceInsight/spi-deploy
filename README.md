@@ -51,3 +51,11 @@ Prometheus metrics for the cluster. Alerts can be configured either directly
 in Grafana or through [Alertmanager](https://alertmanager.solarperformanceinsight.org).
 Application logs are aggregated via [Loki](https://grafana.solarperformanceinsight.org/explore)
 and accessible from the Explore link in Grafana.
+
+## Deploy to Production
+
+The production configuration is found in `overlays/production`. 
+To deploy a new version of SPI to production, first modify the image hash
+in `overlays/production/spi/kustomization.yaml`. Then, tag the commit with
+the change with v0 to have Argo deploy it. To change the tag that deploys 
+production, edit the `targetRevision` in `applications/production.yaml`.
