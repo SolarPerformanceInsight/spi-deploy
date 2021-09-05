@@ -19,7 +19,7 @@ spec:
   source:
     path: overlays/production/spi
     repoURL: https://github.com/solarperformanceinsight/spi-deploy
-    targetRevision: v1
+    targetRevision: production
   syncPolicy:
     automated:
       prune: true
@@ -38,7 +38,7 @@ spec:
   source:
     path: overlays/production/mysql
     repoURL: https://github.com/solarperformanceinsight/spi-deploy
-    targetRevision: v1
+    targetRevision: production
   syncPolicy:
     automated:
       prune: true
@@ -57,7 +57,7 @@ spec:
   source:
     path: overlays/production/redis
     repoURL: https://github.com/solarperformanceinsight/spi-deploy
-    targetRevision: v1
+    targetRevision: production
   syncPolicy:
     automated:
       prune: true
