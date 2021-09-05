@@ -4,7 +4,7 @@
   vars:
     aws_account_id: "{{ lookup('aws_ssm', 'account_id') }}"
     external_secrets:
-      iam_role: "k8s-secrets"
+      iam_role: "SecretAccessRoleSolarApp"
 
   tasks:
     - name: install cert-manager
@@ -50,18 +50,14 @@
             namespace: cert-manager
           spec:
             acme:
-              email: atlorenzo@email.arizona.edu
+              email: ahmed@oceansls.com
               server: https://acme-v02.api.letsencrypt.org/directory
               privateKeySecretRef:
                 name: letsencrypt-prod
               solvers:
-                - selector:
-                    dnsZones:
-                      - "solarperformanceinsight.org"
-                      - "*.solarperformanceinsight.org"
-                  dns01:
-                    route53:
-                      region: us-west-2
+                - http01:
+                    ingress:
+                      class: nginx
       tags:
         - networking
         - cert-manager
@@ -84,7 +80,6 @@
               kind: ClusterIssuer
             dnsNames:
               - "solarperformanceinsight.org"
-              - "*.solarperformanceinsight.org"
       tags:
         - networking
         - cert-manager
