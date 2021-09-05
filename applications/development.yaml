@@ -18,7 +18,7 @@ spec:
   project: default
   source:
     path: overlays/development/spi
-    repoURL: https://github.com/Yas11r/spi-deploy
+    repoURL: https://github.com/solarperformanceinsight/spi-deploy
     targetRevision: HEAD
   syncPolicy:
     automated:
@@ -37,7 +37,7 @@ spec:
   project: default
   source:
     path: overlays/development/mysql
-    repoURL: https://github.com/Yas11r/spi-deploy
+    repoURL: https://github.com/solarperformanceinsight/spi-deploy
     targetRevision: HEAD
   syncPolicy:
     automated:
@@ -56,7 +56,7 @@ spec:
   project: default
   source:
     path: overlays/development/redis
-    repoURL: https://github.com/Yas11r/spi-deploy
+    repoURL: https://github.com/solarperformanceinsight/spi-deploy
     targetRevision: HEAD
   syncPolicy:
     automated:
