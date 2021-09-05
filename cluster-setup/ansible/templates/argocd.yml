@@ -2232,15 +2232,15 @@ subjects:
   namespace: argocd
 ---
 ### START USER CONFIG
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/name: github-credentials
-    app.kubernetes.io.part-of: argocd
-  name: github-credentials
-data:
-  sshPrivateKey: "{{ lookup('aws_ssm', '/argocd/github-ssh-private-key') | b64encode }}"
+##apiVersion: v1
+##kind: Secret
+##metadata:
+##  labels:
+##    app.kubernetes.io/name: github-credentials
+##    app.kubernetes.io.part-of: argocd
+#  name: github-credentials
+#data:
+#  sshPrivateKey: "{{ lookup('aws_ssm', '/argocd/github-ssh-private-key') | b64encode }}"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -2254,36 +2254,36 @@ data:
   statusbadge.enabled: 'true'
   users.anonymous.enabled: 'false'
   ga.trackingid: ''
-  dex.config: |
-    connectors:
-    - type: github
-      id: github
-      name: GitHub
-      config:
-        clientID: $dex.github.clientId
-        clientSecret: $dex.github.clientSecret
-        teamNameField: slug
-        orgs:
-        - name: SolarPerformanceInsight
-          teams:
-          - deploy
-  repository.credentials: |
-    - url: git@github.com:solarperformanceinsight
-      sshPrivateKeySecret:
-        name: github-credentials
-        key: sshPrivateKey
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/name: argocd-rbac-cm
-    app.kubernetes.io/part-of: argocd
-  name: argocd-rbac-cm
-data:
-  policy.default: role:readonly
-  policy.csv: |
-    g, SolarPerformanceInsight:deploy, role:admin
+#  dex.config: |
+#    connectors:
+#    - type: github
+#      id: github
+#      name: GitHub
+#      config:
+#        clientID: $dex.github.clientId
+#        clientSecret: $dex.github.clientSecret
+#        teamNameField: slug
+#        orgs:
+#        - name: SolarPerformanceInsight
+#          teams:
+#          - deploy
+#  repository.credentials: |
+#    - url: git@github.com:solarperformanceinsight
+#      sshPrivateKeySecret:
+#        name: github-credentials
+#        key: sshPrivateKey
+#---
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  labels:
+#    app.kubernetes.io/name: argocd-rbac-cm
+#    app.kubernetes.io/part-of: argocd
+#  name: argocd-rbac-cm
+#data:
+#  policy.default: role:readonly
+#  policy.csv: |
+#    g, SolarPerformanceInsight:deploy, role:admin
 ---
 apiVersion: v1
 kind: Secret
@@ -2296,9 +2296,9 @@ type: Opaque
 data:
   admin.password: "{{ lookup('aws_ssm', '/argocd/admin_pw_bcrypt') | b64encode }}"
   admin.passwordMtime: "{{ ansible_date_time.epoch | b64encode }}"
-  webhook.github.secret: "{{ lookup('aws_ssm', '/argocd/github_webhook_secret') | b64encode }}"
-  dex.github.clientId: "{{ lookup('aws_ssm', '/argocd/github_clientid') | b64encode }}"
-  dex.github.clientSecret: "{{ lookup('aws_ssm', '/argocd/github_clientsecret') | b64encode }}"
+#  webhook.github.secret: "{{ lookup('aws_ssm', '/argocd/github_webhook_secret') | b64encode }}"
+#  dex.github.clientId: "{{ lookup('aws_ssm', '/argocd/github_clientid') | b64encode }}"
+#  dex.github.clientSecret: "{{ lookup('aws_ssm', '/argocd/github_clientsecret') | b64encode }}"
 ### END USER CONFIG
 ---
 apiVersion: v1
